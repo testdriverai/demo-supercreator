@@ -7,33 +7,14 @@ jobs:
   test-action:
     name: Supercreator Desktop TestDriver
     runs-on: macos-latest
-    strategy:
-      matrix:
-        os: [mac]
-        browser: [chrome]
     steps:
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: testdriverai/action@main
         with:
-          node-version: '16'
-
-      - name: Install Dashcam Chrome
-        run: |
-          npm init -y
-          npm install dashcam-chrome
-
-      - name: Debug replayUrl
-        run: |
-          echo "Checking if replayUrl is set..."
-          echo "replayUrl: '${{ env.replayUrl }}'"
-
-      - uses: replayableio/testdriver-action@main
-        with:
-          version: v4.0.0
+          key: ${{ secrets.TESTDRIVER_API_KEY }}
           prompt: |
             1. /run testdriver/install_login_mac.yml
             2. /run testdriver/ui.yml
-          os: ${{ matrix.os }}
+          os: mac
           prerun: |
             # Check if IPv6 is enabled
             if ifconfig | grep -q "inet6"; then
@@ -85,7 +66,6 @@ jobs:
             else
                 echo "Failed to download the Supercreator installer."
             fi
-          key: ${{ secrets.TESTDRIVER_API_KEY }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FORCE_COLOR: "3"
