@@ -1,71 +1,81 @@
-name: TestDriver.ai / Regression
 
+name: Supercreator dekstop testdriver
 on:
-  push:
-    branches: ["main"]
   pull_request:
-  workflow_dispatch:
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
 
 jobs:
-  gather-test-files:
-    name: Gather Test Files
+  test-action:
+    name: Supercreator dekstop testdriver
     runs-on: ubuntu-latest
     strategy:
       matrix:
         os: [mac]
         browser: [chrome]
-    outputs:
-      test_files: ${{ steps.test_list.outputs.files }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-
-      - name: Find all test files and extract filenames
-        id: test_list
-        run: |
-          FILES=$(ls ./testdriver/*.yml)
-          FILENAMES=$(basename -a $FILES)
-          FILES_JSON=$(echo "$FILENAMES" | jq -R -s -c 'split("\n")[:-1]')
-          echo "::set-output name=files::$FILES_JSON"
-
-  test:
-    needs: gather-test-files
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        test: ${{ fromJson(needs.gather-test-files.outputs.test_files) }}
-      fail-fast: false
-    name: ${{ matrix.test }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-
-      - name: Display filename being tested
-        run: |
-          echo "Running job for file: ${{ matrix.test }}"
-      
-      - uses: testdriverai/action@main
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          key: ${{ secrets.TESTDRIVER_API_KEY }}
-          prompt: | 
-            1. /run testdriver/${{ matrix.test }} 
+          node-version: '16'
+
+      - name: Install Dashcam Chrome
+        run: |
+          npm init -y
+          npm install dashcam-chrome
+
+      - uses: replayableio/testdriver-action@main
+        with:
+          version: v4.0.0
+          prompt: |
+            1. /run testdriver/install_login_mac.yml
+            2. /run testdriver/ui.yml
+          os: ${{ matrix.os }}
           prerun: |
-            Get-NetIPAddress -AddressFamily IPv6
+            # Check if IPv6 is enabled
+            if ifconfig | grep -q "inet6"; then
+                echo "IPv6 is enabled"
+            else
+                echo "IPv6 is not enabled"
+            fi
+
             # URL for the Supercreator installer
-            $installerUrl = "https://storage.googleapis.com/app-versions/Supercreator-x64-latest.dmg"
+            installerUrl="https://storage.googleapis.com/app-versions/Supercreator-x64-latest.dmg"
+
             # Location to save the installer
-            $installerPath = "$env:USERPROFILE\Desktop\SupercreatorInstaller.exe"
-            # Download the Arc browser installer
-            Write-Host "Downloading Supercreator installer..."
-            Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+            installerPath="$HOME/Desktop/SupercreatorInstaller.dmg"
+
+            # Download the Supercreator installer
+            echo "Downloading Supercreator installer..."
+            curl -L "$installerUrl" -o "$installerPath"
+
             # Check if the download was successful
-            if (Test-Path $installerPath) {
-                Write-Host "Download successful. Running the installer..."
-                Start-Process -FilePath $installerPath -ArgumentList '/silent' -Wait
-                Start-Sleep -Seconds 10
-            } else {
-                Write-Host "Failed to download the Supercreator installer."
-            }
+            if [ -f "$installerPath" ]; then
+                echo "Download successful. Mounting the installer..."
+                
+                # Mount the DMG file
+                hdiutil attach "$installerPath" -nobrowse -quiet
+                
+                # Find the mounted volume (assumes there's only one new volume)
+                volumePath=$(ls /Volumes | grep -i "Supercreator" | head -n 1)
+
+                if [ -n "$volumePath" ]; then
+                    echo "Installer mounted at /Volumes/$volumePath"
+                    
+                    # Run the installer (if it's a .app, adapt if it's a .pkg)
+                    open "/Volumes/$volumePath/Supercreator.app"
+                    
+                    # Wait before unmounting
+                    sleep 10
+                    
+                    # Unmount the DMG
+                    hdiutil detach "/Volumes/$volumePath" -quiet
+                else
+                    echo "Failed to find the mounted installer."
+                fi
+            else
+                echo "Failed to download the Supercreator installer."
+            fi
+          key: ${{ secrets.TESTDRIVER_API_KEY }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FORCE_COLOR: "3"

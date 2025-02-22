@@ -1,0 +1,112 @@
+version: 4.2.12
+session: 67ba092ac0f43b48770fa186
+steps:
+  - prompt: open the supercreator installer
+    commands:
+      - command: hover-text
+        text: Supercreator-arm64-latest.dmg
+        description: installer file on the desktop
+        action: double-click
+  - prompt: >-
+      double click to open the applications shortcut in the supercreator
+      installer
+    commands:
+      - command: focus-application
+        name: Supercreator Installer
+      - command: hover-text
+        text: Applications
+        description: Applications shortcut in Supercreator Installer
+        action: double-click
+  - prompt: copy the supercreator app and paste it into the open applications folder
+    commands:
+      - command: hover-text
+        text: Supercreator
+        description: Supercreator app icon in Supercreator Installer
+        action: right-click
+      - command: press-keys
+        keys:
+          - command
+          - c
+      - command: hover-text
+        text: Applications
+        description: Applications folder in Finder window
+        action: click
+      - command: press-keys
+        keys:
+          - command
+          - v
+  - prompt: eject supercreator installer
+    commands:
+      - command: hover-text
+        text: Supercreator Installer
+        description: Supercreator Installer icon on the desktop
+        action: right-click
+      - command: hover-text
+        text: Eject Only "Supercreator Installer"
+        description: Eject option in the context menu
+        action: click
+  - prompt: open supercreator from spotlight
+    commands:
+      - command: press-keys
+        keys:
+          - command
+          - space
+      - command: type
+        text: Supercreator
+      - command: press-keys
+        keys:
+          - enter
+  - prompt: >-
+      Click open in the Supercreator is an app downloaded from the internet
+      dialog
+    commands:
+      - command: hover-text
+        text: Open
+        description: open button in the Supercreator download dialog
+        action: click
+  - prompt: Click log in with browser
+    commands:
+      - command: hover-text
+        text: Log in with browser
+        description: log in button on the Supercreator screen
+        action: click
+  - prompt: Login with email s@worldofmail.com and password Password123!
+    commands:
+      - command: hover-text
+        text: Log In
+        description: log in link at the bottom of the Supercreator sign-up page
+        action: click
+      - command: hover-text
+        text: Your email
+        description: email input field on the login page
+        action: click
+      - command: type
+        text: s@worldofmail.com
+      - command: hover-text
+        text: Create password
+        description: password input field on the login page
+        action: click
+      - command: type
+        text: Password123!
+      - command: hover-text
+        text: Log In
+        description: log in button on the login page
+        action: click
+  - prompt: close chrome
+    commands:
+      - command: press-keys
+        keys:
+          - alt
+          - f4
+  - prompt: click Log in with Browser
+    commands:
+      - command: hover-text
+        text: Log in with browser
+        description: log in button on the Supercreator page
+        action: click
+  - prompt: click Open Supercreator in chrome
+    commands:
+      - command: hover-text
+        text: Open Supercreator
+        description: open supercreator button in the Chrome dialog
+        action: click
