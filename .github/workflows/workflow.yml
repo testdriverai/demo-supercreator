@@ -1,13 +1,12 @@
-
-name: Supercreator dekstop testdriver
+name: Supercreator Desktop TestDriver
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
 
 jobs:
   test-action:
-    name: Supercreator dekstop testdriver
-    runs-on: ubuntu-latest
+    name: Supercreator Desktop TestDriver
+    runs-on: macos-latest
     strategy:
       matrix:
         os: [mac]
@@ -23,6 +22,11 @@ jobs:
           npm init -y
           npm install dashcam-chrome
 
+      - name: Debug replayUrl
+        run: |
+          echo "Checking if replayUrl is set..."
+          echo "replayUrl: '${{ env.replayUrl }}'"
+
       - uses: replayableio/testdriver-action@main
         with:
           version: v4.0.0
@@ -36,6 +40,12 @@ jobs:
                 echo "IPv6 is enabled"
             else
                 echo "IPv6 is not enabled"
+            fi
+
+            # Ensure Dashcam is running
+            if ! pgrep -x "Dashcam" > /dev/null; then
+                echo "Error: Dashcam is not running!"
+                exit 1
             fi
 
             # URL for the Supercreator installer
