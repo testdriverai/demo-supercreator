@@ -1,0 +1,39 @@
+version: 4.2.12
+session: 67ba1287c0f43b48770fa269
+steps:
+  - prompt: click creator analytics and assert the button manage accounts is visible
+    commands:
+      - command: hover-text
+        text: Creator Analytics
+        description: creator analytics option in the sidebar
+        action: click
+      - command: assert
+        expect: the button manage accounts is visible
+  - prompt: >-
+      click team analytics and assert Manage Team & Permissions button is
+      visible
+    commands:
+      - command: hover-text
+        text: Team Analytics
+        description: team analytics option in the sidebar
+        action: click
+      - command: assert
+        expect: the button manage team & permissions is visible
+  - prompt: >-
+      click Purchase subscription and assert the Choose your subscription plan
+      element is visible
+    commands:
+      - command: hover-text
+        text: Purchase Subscription
+        description: purchase subscription option in the sidebar
+        action: click
+      - command: assert
+        expect: the element choose your subscription plan is visible
+  - prompt: click report bug and assert a chat window pops up
+    commands:
+      - command: hover-text
+        text: Report Bug
+        description: report bug option in the top bar
+        action: click
+      - command: assert
+        expect: a chat window pops up
