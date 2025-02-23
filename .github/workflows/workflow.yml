@@ -29,7 +29,7 @@ jobs:
           npm init -y
           npm install dashcam-chrome
           
-      - uses: replayableio/testdriver-action@main
+      - uses: testdriverai/action@main
         with:
           version: v4.0.0
           prompt: |
