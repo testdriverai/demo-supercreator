@@ -17,16 +17,30 @@ on:
 jobs:
   test-action:
     name: Supercreator Desktop TestDriver
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
-      - uses: testdriverai/action@main
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          key: ${{ secrets.TESTDRIVER_API_KEY }}
+          node-version: '16'
+
+      - name: Install Dashcam Chrome
+        run: |
+          npm init -y
+          npm install dashcam-chrome
+          
+      - uses: replayableio/testdriver-action@main
+        with:
+          version: v4.0.0
           prompt: |
             1. /run testdriver/install_login_mac.yml
             2. /run testdriver/ui.yml
           os: mac
           prerun: |
+            # Install Google Chrome on macOS
+            brew install --cask google-chrome
+            /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --start-maximized --load-extension=$(pwd)/node_modules/dashcam-chrome/build &
+            
             # Check if IPv6 is enabled
             if ifconfig | grep -q "inet6"; then
                 echo "IPv6 is enabled"
@@ -77,6 +91,7 @@ jobs:
             else
                 echo "Failed to download the Supercreator installer."
             fi
+          key: ${{ secrets.TESTDRIVER_API_KEY }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FORCE_COLOR: "3"
