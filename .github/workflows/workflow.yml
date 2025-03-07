@@ -16,8 +16,8 @@ jobs:
         with:
           key: ${{ secrets.TESTDRIVER_API_KEY }}
           prompt: | 
-            1. /run testdriver/install.yml
-            2. /run testdriver/setup.yml
+            1. /run testdriver/login.yml
+            2. /run testdriver/ui.yml
           prerun: |
             Get-NetIPAddress -AddressFamily IPv6
             # URL for the SuperCreator installer
