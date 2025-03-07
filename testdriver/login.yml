@@ -7,6 +7,26 @@ steps:
         text: Log in with browser
         description: log in button on the Supercreator screen
         action: click
+  - prompt: >-
+      from the chrome url bar, navigate to
+      https://console.supercreator.app/login
+    commands:
+      - command: hover-text
+        text: console.supercreator.app/signup
+        description: current URL in the Chrome URL bar
+        action: click
+      - command: press-keys
+        keys:
+          - control
+          - a
+      - command: press-keys
+        keys:
+          - backspace
+      - command: type
+        text: https://console.supercreator.app/login
+      - command: press-keys
+        keys:
+          - enter
   - prompt: Login with email s@worldofmail.com and password Password123!
     commands:
       - command: hover-text
