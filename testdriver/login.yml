@@ -1,14 +1,6 @@
 version: 4.2.12
 session: 67ba092ac0f43b48770fa186
 steps:
-  - prompt: >-
-      Click open in the Supercreator is an app downloaded from the internet
-      dialog
-    commands:
-      - command: hover-text
-        text: Open
-        description: open button in the Supercreator download dialog
-        action: click
   - prompt: Click log in with browser
     commands:
       - command: hover-text
@@ -19,7 +11,7 @@ steps:
     commands:
       - command: hover-text
         text: Log In
-        description: log in link at the bottom of the Supercreator sign-up page
+        description: log in link at the bottom of the Supercreator sign-up page, next to Already have an account?
         action: click
       - command: hover-text
         text: Your email
