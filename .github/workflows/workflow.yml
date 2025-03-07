@@ -1,97 +1,40 @@
-name: Supercreator Desktop TestDriver
+name: TestDriver.ai / SuperCreator
+
 on:
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-        - info
-        - warning
-        - debug
+  push:
+    branches: ["main"]
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" 
 
 jobs:
-  test-action:
-    name: Supercreator Desktop TestDriver
+  test:
     runs-on: ubuntu-latest
-    steps:
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install Dashcam Chrome
-        run: |
-          npm init -y
-          npm install dashcam-chrome
-          
+    steps:      
       - uses: testdriverai/action@main
         with:
-          version: v4.0.0
-          prompt: |
-            1. /run testdriver/install_login_mac.yml
-            2. /run testdriver/ui.yml
-          os: mac
-          prerun: |
-            # Install Google Chrome on macOS
-            brew install --cask google-chrome
-            /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --start-maximized --load-extension=$(pwd)/node_modules/dashcam-chrome/build &
-            
-            # Check if IPv6 is enabled
-            if ifconfig | grep -q "inet6"; then
-                echo "IPv6 is enabled"
-            else
-                echo "IPv6 is not enabled"
-            fi
-
-            # Ensure Dashcam is running
-            if ! pgrep -x "Dashcam" > /dev/null; then
-                echo "Error: Dashcam is not running!"
-                exit 1
-            fi
-
-            # URL for the Supercreator installer
-            installerUrl="https://storage.googleapis.com/app-versions/Supercreator-x64-latest.dmg"
-
-            # Location to save the installer
-            installerPath="$HOME/Desktop/SupercreatorInstaller.dmg"
-
-            # Download the Supercreator installer
-            echo "Downloading Supercreator installer..."
-            curl -L "$installerUrl" -o "$installerPath"
-
-            # Check if the download was successful
-            if [ -f "$installerPath" ]; then
-                echo "Download successful. Mounting the installer..."
-                
-                # Mount the DMG file
-                hdiutil attach "$installerPath" -nobrowse -quiet
-                
-                # Find the mounted volume (assumes there's only one new volume)
-                volumePath=$(ls /Volumes | grep -i "Supercreator" | head -n 1)
-
-                if [ -n "$volumePath" ]; then
-                    echo "Installer mounted at /Volumes/$volumePath"
-                    
-                    # Run the installer (if it's a .app, adapt if it's a .pkg)
-                    open "/Volumes/$volumePath/Supercreator.app"
-                    
-                    # Wait before unmounting
-                    sleep 10
-                    
-                    # Unmount the DMG
-                    hdiutil detach "/Volumes/$volumePath" -quiet
-                else
-                    echo "Failed to find the mounted installer."
-                fi
-            else
-                echo "Failed to download the Supercreator installer."
-            fi
           key: ${{ secrets.TESTDRIVER_API_KEY }}
+          prompt: | 
+            1. /run testdriver/install.yml
+            2. /run testdriver/setup.yml
+          prerun: |
+            Get-NetIPAddress -AddressFamily IPv6
+            # URL for the SuperCreator installer
+            $installerUrl = "https://storage.googleapis.com/app-versions/supercreator-setup-latest.exe"
+            # Location to save the installer
+            $installerPath = "$env:USERPROFILE\Downloads\SuperCreatorInstaller.exe"
+            # Download the SuperCreator installer
+            Write-Host "Downloading SuperCreator installer..."
+            Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+            # Check if the download was successful
+            if (Test-Path $installerPath) {
+                Write-Host "Download successful. Running the installer..."
+                Start-Process -FilePath $installerPath -ArgumentList '/silent' -Wait
+                Start-Sleep -Seconds 10
+            } else {
+                Write-Host "Failed to download the SuperCreator installer."
+            }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FORCE_COLOR: "3"
