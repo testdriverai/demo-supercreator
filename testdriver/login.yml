@@ -45,10 +45,9 @@ steps:
         action: click
       - command: type
         text: Password123!
-      - command: hover-text
-        text: Log In
-        description: log in button on the login page
-        action: click
+      - command: press-keys
+        keys:
+          - enter
   - prompt: close chrome
     commands:
       - command: press-keys
