@@ -27,7 +27,7 @@ steps:
       - command: press-keys
         keys:
           - enter
-  - prompt: Login with email s@worldofmail.com and password Password123!
+  - prompt: Login with email ${TD_TEST_USERNAME} and password ${TD_TEST_PASSWORD}
     commands:
       - command: hover-text
         text: Log In
@@ -38,13 +38,13 @@ steps:
         description: email input field on the login page
         action: click
       - command: type
-        text: s@worldofmail.com
+        text: ${TD_TEST_USERNAME}
       - command: hover-text
         text: Create password
         description: password input field on the login page
         action: click
       - command: type
-        text: Password123!
+        text: ${TD_TEST_PASSWORD}
       - command: press-keys
         keys:
           - enter
