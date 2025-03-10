@@ -38,3 +38,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FORCE_COLOR: "3"
+          TD_TEST_USERNAME: ${{ secrets.TD_TEST_USERNAME }}
+          TD_TEST_PASSWORD: ${{ secrets.TD_TEST_PASSWORD }}
